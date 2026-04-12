@@ -15,7 +15,7 @@ const DEFAULT_MODEL = "gpt-4.1-mini";
 // any given time; the rest queue and run as slots free up.
 // ---------------------------------------------------------------------------
 
-const LLM_CONCURRENCY = 5;
+const LLM_CONCURRENCY = 1;
 let llmSlots = LLM_CONCURRENCY;
 const llmQueue: Array<() => void> = [];
 
@@ -40,8 +40,8 @@ function releaseSlot(): void {
 // LLM
 // ---------------------------------------------------------------------------
 
-const MAX_RETRIES = 3;
-const RETRY_BASE_MS = 5_000; // 5 s, 10 s, 20 s
+const MAX_RETRIES = 5;
+const RETRY_BASE_MS = 15_000; // 15 s, 30 s, 60 s, 120 s, 240 s
 
 function is429(err: unknown): boolean {
   return (err as { status?: number })?.status === 429 || String(err).includes("429");
