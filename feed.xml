@@ -6,7 +6,21 @@
     <description>AI 开源生态每日简报 · Daily AI ecosystem digest</description>
     <language>zh-CN</language>
     <atom:link href="https://zx0828.github.io/big_model_radar/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Mon, 27 Apr 2026 01:38:27 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 01 May 2026 03:03:08 +0000</lastBuildDate>
+    <item>
+      <title>AI 工具生态月报 2026-05-01</title>
+      <link>https://zx0828.github.io/big_model_radar/#2026-05-01/ai-monthly</link>
+      <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-05-01/ai-monthly</guid>
+      <pubDate>Fri, 01 May 2026 00:00:00 +0000</pubDate>
+      <description>AI 工具生态月报 2026-05-01</description>
+    </item>
+    <item>
+      <title>AI Tools Monthly Digest 2026-05-01</title>
+      <link>https://zx0828.github.io/big_model_radar/#2026-05-01/ai-monthly-en</link>
+      <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-05-01/ai-monthly-en</guid>
+      <pubDate>Fri, 01 May 2026 00:00:00 +0000</pubDate>
+      <description>AI Tools Monthly Digest 2026-05-01</description>
+    </item>
     <item>
       <title>AI 工具生态周报 2026-04-27</title>
       <link>https://zx0828.github.io/big_model_radar/#2026-04-27/ai-weekly</link>
@@ -202,20 +216,6 @@
       <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-04-08/ai-agents</guid>
       <pubDate>Wed, 08 Apr 2026 00:00:00 +0000</pubDate>
       <description>AI Agents 生态日报 2026-04-08</description>
-    </item>
-    <item>
-      <title>AI 官方内容追踪报告 2026-04-08</title>
-      <link>https://zx0828.github.io/big_model_radar/#2026-04-08/ai-web</link>
-      <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-04-08/ai-web</guid>
-      <pubDate>Wed, 08 Apr 2026 00:00:00 +0000</pubDate>
-      <description>AI 官方内容追踪报告 2026-04-08</description>
-    </item>
-    <item>
-      <title>AI 开源趋势日报 2026-04-08</title>
-      <link>https://zx0828.github.io/big_model_radar/#2026-04-08/ai-trending</link>
-      <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-04-08/ai-trending</guid>
-      <pubDate>Wed, 08 Apr 2026 00:00:00 +0000</pubDate>
-      <description>AI 开源趋势日报 2026-04-08</description>
     </item>
   </channel>
 </rss>
