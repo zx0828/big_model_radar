@@ -302,12 +302,13 @@ export async function fetchSiteContent(
     return false;
   });
 
-  // Cap content fetches on first run to avoid excessive runtime
-  const toFetch = isFirstRun ? newUrls.slice(0, MAX_CONTENT_FETCH_FIRST_RUN) : newUrls;
+  // Cap content fetches to avoid excessive runtime/LLM usage
+  const MAX_PER_RUN = isFirstRun ? MAX_CONTENT_FETCH_FIRST_RUN : 50;
+  const toFetch = newUrls.slice(0, MAX_PER_RUN);
 
   console.log(
     `  [web/${site}] ${isFirstRun ? "First run" : "Incremental"}: ` +
-      `${newUrls.length} new URLs, fetching content for ${toFetch.length}`,
+      `${newUrls.length} new URLs, processing ${toFetch.length}`,
   );
 
   // Build items — either from full page fetches or from sitemap metadata only
