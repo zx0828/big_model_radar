@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
-const DEFAULT_MODEL = "gpt-4.1-mini";
+const DEFAULT_MODEL = "deepseek-v4-flash";
 
 // ---------------------------------------------------------------------------
 // Concurrency limiter — prevents rate-limit (429) errors when many LLM calls
