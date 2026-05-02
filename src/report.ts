@@ -169,7 +169,9 @@ export async function callLlm(prompt: string, maxTokens = 4096): Promise<string>
         releaseSlot();
         released = true;
         const wait = RETRY_BASE_MS * 2 ** attempt;
-        console.error(`[llm] Retryable error: ${err} — retry ${attempt + 1}/${MAX_RETRIES} in ${wait / 1000}s...`);
+        console.error(
+          `[llm] Retryable error: ${err} — retry ${attempt + 1}/${MAX_RETRIES} in ${wait / 1000}s...`,
+        );
         await sleep(wait);
         continue;
       }
