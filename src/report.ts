@@ -6,8 +6,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
-const DEFAULT_MODEL = "deepseek-v4-flash";
+const DEFAULT_OPENAI_BASE_URL = "https://integrate.api.nvidia.com/v1";
+const DEFAULT_MODEL = "stepfun-ai/step-3.5-flash";
 
 // ---------------------------------------------------------------------------
 // Concurrency limiter — prevents rate-limit (429) errors when many LLM calls
@@ -15,7 +15,7 @@ const DEFAULT_MODEL = "deepseek-v4-flash";
 // any given time; the rest queue and run as slots free up.
 // ---------------------------------------------------------------------------
 
-const LLM_CONCURRENCY = 1;
+const LLM_CONCURRENCY = 5;
 let llmSlots = LLM_CONCURRENCY;
 const llmQueue: Array<() => void> = [];
 
@@ -64,7 +64,7 @@ export function getLlmBaseUrl(): string {
 }
 
 function getLlmModel(): string {
-  return process.env["OPENAI_MODEL"] ?? process.env["ANTHROPIC_MODEL"] ?? DEFAULT_MODEL;
+  return process.env["OPENAI_MODEL"] || process.env["ANTHROPIC_MODEL"] || DEFAULT_MODEL;
 }
 
 export function hasLlmCredentials(): boolean {
@@ -72,28 +72,33 @@ export function hasLlmCredentials(): boolean {
 }
 
 function extractTextContent(content: unknown): string {
-  if (typeof content === "string") return content.trim();
-  if (Array.isArray(content)) {
-    const text = content
-      .map((part) => {
-        if (typeof part === "string") return part;
-        if (
-          part &&
-          typeof part === "object" &&
-          "type" in part &&
-          part.type === "text" &&
-          "text" in part &&
-          typeof part.text === "string"
-        ) {
-          return part.text;
-        }
-        return "";
-      })
-      .join("")
-      .trim();
-    if (text) return text;
+  try {
+    if (content === null || content === undefined) return "";
+    if (typeof content === "string") return content.trim();
+    if (Array.isArray(content)) {
+      const text = content
+        .map((part) => {
+          if (typeof part === "string") return part;
+          if (
+            part &&
+            typeof part === "object" &&
+            "type" in part &&
+            part.type === "text" &&
+            "text" in part &&
+            typeof part.text === "string"
+          ) {
+            return part.text;
+          }
+          return "";
+        })
+        .join("")
+        .trim();
+      return text;
+    }
+  } catch {
+    // never throw
   }
-  throw new Error("Unexpected response type from LLM");
+  return "";
 }
 
 export async function callLlm(prompt: string, maxTokens = 4096): Promise<string> {
@@ -104,38 +109,67 @@ export async function callLlm(prompt: string, maxTokens = 4096): Promise<string>
       const apiKey = getLlmApiKey();
       if (!apiKey) throw new Error("Missing required environment variable: OPENAI_API_KEY");
 
-      const resp = await fetch(`${getLlmBaseUrl()}/chat/completions`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: getLlmModel(),
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.2,
-          max_tokens: maxTokens,
-        }),
-      });
-      if (!resp.ok) {
-        throw new Error(`LLM API ${resp.status}: ${await resp.text()}`);
-      }
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60_000);
 
-      const data = (await resp.json()) as {
-        choices?: Array<{
-          message?: {
-            content?: unknown;
-          };
-        }>;
-      };
-      const content = data.choices?.[0]?.message?.content;
-      return extractTextContent(content);
+      try {
+        const resp = await fetch(`${getLlmBaseUrl()}/chat/completions`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: getLlmModel(),
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.2,
+            max_tokens: maxTokens,
+          }),
+          signal: controller.signal,
+        });
+        if (!resp.ok) {
+          const status = resp.status;
+          const errorText = await resp.text();
+          if (status === 401 || status === 403) {
+            throw new Error(`LLM API Fatal ${status}: ${errorText}`);
+          }
+          throw new Error(`LLM_RETRYABLE API ${status}: ${errorText}`);
+        }
+
+        const data = (await resp.json()) as {
+          choices?: Array<{
+            message?: {
+              content?: unknown;
+            };
+          }>;
+        };
+
+        if (!data.choices || data.choices.length === 0) {
+          throw new Error("LLM_RETRYABLE: empty choices");
+        }
+
+        const content = data.choices?.[0]?.message?.content;
+        const text = extractTextContent(content);
+        if (!text) {
+          throw new Error("LLM_RETRYABLE: empty content");
+        }
+
+        return text;
+      } finally {
+        clearTimeout(timeoutId);
+      }
     } catch (err) {
-      if (attempt < MAX_RETRIES && is429(err)) {
+      const errStr = String(err);
+      const isRetryable =
+        is429(err) ||
+        errStr.includes("LLM_RETRYABLE") ||
+        errStr.includes("AbortError") ||
+        (err instanceof Error && err.name === "AbortError");
+      if (attempt < MAX_RETRIES && isRetryable) {
         releaseSlot();
         released = true;
         const wait = RETRY_BASE_MS * 2 ** attempt;
-        console.error(`[llm] 429 — retry ${attempt + 1}/${MAX_RETRIES} in ${wait / 1000}s...`);
+        console.error(`[llm] Retryable error: ${err} — retry ${attempt + 1}/${MAX_RETRIES} in ${wait / 1000}s...`);
         await sleep(wait);
         continue;
       }

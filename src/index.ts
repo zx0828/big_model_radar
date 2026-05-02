@@ -549,13 +549,9 @@ async function main(): Promise<void> {
 
   console.log(`[${now.toISOString()}] Starting digest | endpoint: ${getLlmBaseUrl()}`);
 
-  const langs = (process.env["REPORT_LANGS"] ?? "zh")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter((s) => s === "zh" || s === "en");
-  const enabledLangs = langs.length > 0 ? langs : ["zh"];
-  const genZh = enabledLangs.includes("zh");
-  const genEn = enabledLangs.includes("en");
+  const enabledLangs = ["zh"];
+  const genZh = true;
+  // const genEn = false;
   console.log(`  Languages: ${enabledLangs.join(", ")}`);
 
   // 1. Fetch all data in parallel
@@ -569,7 +565,7 @@ async function main(): Promise<void> {
 
   // 2. Generate per-repo LLM summaries per language
   let zhSummaries: Awaited<ReturnType<typeof generateSummaries>> | undefined;
-  let enSummaries: Awaited<ReturnType<typeof generateSummaries>> | undefined;
+  // let enSummaries: Awaited<ReturnType<typeof generateSummaries>> | undefined;
   await Promise.all([
     genZh
       ? generateSummaries(
@@ -582,6 +578,7 @@ async function main(): Promise<void> {
           "zh",
         ).then((r) => (zhSummaries = r))
       : Promise.resolve(),
+    /*
     genEn
       ? generateSummaries(
           fetchedCli,
@@ -593,13 +590,14 @@ async function main(): Promise<void> {
           "en",
         ).then((r) => (enSummaries = r))
       : Promise.resolve(),
+    */
   ]);
 
   // 3. Generate cross-repo comparisons per language
   let comparison = "";
   let peersComparison = "";
-  let enComparison = "";
-  let enPeersComparison = "";
+  // let enComparison = "";
+  // let enPeersComparison = "";
   if (genZh && zhSummaries) {
     const openclawDigest: RepoDigest = {
       config: OPENCLAW,
@@ -613,6 +611,7 @@ async function main(): Promise<void> {
       callLlm(buildPeersComparisonPrompt(openclawDigest, zhSummaries.peerDigests, dateStr, "zh")),
     ]);
   }
+  /*
   if (genEn && enSummaries) {
     const enOpenclawDigest: RepoDigest = {
       config: OPENCLAW,
@@ -626,9 +625,10 @@ async function main(): Promise<void> {
       callLlm(buildPeersComparisonPrompt(enOpenclawDigest, enSummaries.peerDigests, dateStr, "en")),
     ]);
   }
+  */
 
   const footer = autoGenFooter("zh");
-  const enFooter = autoGenFooter("en");
+  // const enFooter = autoGenFooter("en");
 
   // 4. Build + save all reports
   if (genZh && zhSummaries) {
@@ -668,6 +668,7 @@ async function main(): Promise<void> {
       console.log(`  Created OpenClaw issue (zh): ${openclawUrl}`);
     }
   }
+  /*
   if (genEn && enSummaries) {
     const enDigestContent = buildCliReportContent(
       enSummaries.cliDigests,
@@ -705,10 +706,11 @@ async function main(): Promise<void> {
       console.log(`  Created OpenClaw issue (en): ${openclawEnUrl}`);
     }
   }
+  */
 
   // Web report: zh saves state, en skips state save
   if (genZh) await saveWebReport(webResults, webState, utcStr, dateStr, digestRepo, footer, "zh");
-  if (genEn) await saveWebReport(webResults, webState, utcStr, dateStr, digestRepo, enFooter, "en");
+  // if (genEn) await saveWebReport(webResults, webState, utcStr, dateStr, digestRepo, enFooter, "en");
 
   await Promise.all([
     genZh && zhSummaries
@@ -722,6 +724,7 @@ async function main(): Promise<void> {
           "zh",
         )
       : Promise.resolve(),
+    /*
     genEn && enSummaries
       ? saveTrendingReport(
           trendingData,
@@ -733,8 +736,9 @@ async function main(): Promise<void> {
           "en",
         )
       : Promise.resolve(),
+    */
     genZh ? saveHnReport(hnData, utcStr, dateStr, digestRepo, footer, "zh") : Promise.resolve(),
-    genEn ? saveHnReport(hnData, utcStr, dateStr, digestRepo, enFooter, "en") : Promise.resolve(),
+    // genEn ? saveHnReport(hnData, utcStr, dateStr, digestRepo, enFooter, "en") : Promise.resolve(),
   ]);
 
   console.log("Done!");

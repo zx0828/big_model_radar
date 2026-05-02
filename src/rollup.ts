@@ -71,13 +71,9 @@ export async function runWeeklyRollup(): Promise<void> {
   const utcStr = now.toISOString().slice(0, 16).replace("T", " ");
   const weekStr = toWeekStr(cstDate);
   const digestRepo = process.env["DIGEST_REPO"] ?? "";
-  const langs = (process.env["REPORT_LANGS"] ?? "zh")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter((s) => s === "zh" || s === "en");
-  const enabledLangs = langs.length > 0 ? langs : ["zh"];
-  const genZh = enabledLangs.includes("zh");
-  const genEn = enabledLangs.includes("en");
+  const enabledLangs = ["zh"];
+  const genZh = true;
+  // const genEn = false;
 
   console.log(`[weekly] Generating rollup for ${weekStr} (date: ${dateStr})`);
   console.log(`[weekly] Languages: ${enabledLangs.join(", ")}`);
@@ -102,7 +98,7 @@ export async function runWeeklyRollup(): Promise<void> {
   );
 
   const footer = autoGenFooter("zh");
-  const enFooter = autoGenFooter("en");
+  // const enFooter = autoGenFooter("en");
 
   if (genZh) {
     console.log("[weekly] Calling LLM for ZH weekly report...");
@@ -120,6 +116,7 @@ export async function runWeeklyRollup(): Promise<void> {
     }
   }
 
+  /*
   if (genEn) {
     console.log("[weekly] Calling LLM for EN weekly report...");
     const enSummary = await callLlm(buildWeeklyPrompt(dailyDigests, weekStr, "en"), 8192);
@@ -131,6 +128,7 @@ export async function runWeeklyRollup(): Promise<void> {
       enFooter;
     console.log(`  Saved ${saveFile(enContent, dateStr, "ai-weekly-en.md")}`);
   }
+  */
 
   console.log("[weekly] Done!");
 }
@@ -148,13 +146,9 @@ export async function runMonthlyRollup(): Promise<void> {
   const dateStr = cstDate.toISOString().slice(0, 10);
   const utcStr = now.toISOString().slice(0, 16).replace("T", " ");
   const digestRepo = process.env["DIGEST_REPO"] ?? "";
-  const langs = (process.env["REPORT_LANGS"] ?? "zh")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter((s) => s === "zh" || s === "en");
-  const enabledLangs = langs.length > 0 ? langs : ["zh"];
-  const genZh = enabledLangs.includes("zh");
-  const genEn = enabledLangs.includes("en");
+  const enabledLangs = ["zh"];
+  const genZh = true;
+  // const genEn = false;
 
   console.log(`[monthly] Generating rollup for ${monthStr} (date: ${dateStr})`);
   console.log(`[monthly] Languages: ${enabledLangs.join(", ")}`);
@@ -201,7 +195,7 @@ export async function runMonthlyRollup(): Promise<void> {
   console.log(`[monthly] Source: ${sourceLabel.zh}`);
 
   const footer = autoGenFooter("zh");
-  const enFooter = autoGenFooter("en");
+  // const enFooter = autoGenFooter("en");
 
   if (genZh) {
     console.log("[monthly] Calling LLM for ZH monthly report...");
@@ -219,6 +213,7 @@ export async function runMonthlyRollup(): Promise<void> {
     }
   }
 
+  /*
   if (genEn) {
     console.log("[monthly] Calling LLM for EN monthly report...");
     const enSummary = await callLlm(buildMonthlyPrompt(sourceDigests, monthStr, "en"), 8192);
@@ -230,6 +225,7 @@ export async function runMonthlyRollup(): Promise<void> {
       enFooter;
     console.log(`  Saved ${saveFile(enContent, dateStr, "ai-monthly-en.md")}`);
   }
+  */
 
   console.log("[monthly] Done!");
 }
