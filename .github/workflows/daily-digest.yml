@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     # Web content fetching adds ~60-120 s of HTTP requests on incremental runs;
     # the first-ever run (fetching 50 articles) may need up to 20 min.
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
