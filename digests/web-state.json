@@ -1,6 +1,6 @@
 {
   "anthropic": {
-    "lastChecked": "2026-05-02T11:10:52.139Z",
+    "lastChecked": "2026-05-03T00:27:32.110Z",
     "seenUrls": {
       "https://www.anthropic.com/news/responsible-scaling-policy-v3": "2026-02-25T23:57:06.000Z",
       "https://www.anthropic.com/research/deprecation-updates-opus-3": "2026-02-25T20:58:11.000Z",
@@ -354,7 +354,7 @@
     }
   },
   "openai": {
-    "lastChecked": "2026-05-02T11:10:53.926Z",
+    "lastChecked": "2026-05-03T00:27:34.653Z",
     "seenUrls": {
       "https://openai.com/index/arvind-kc-chief-people-officer/": "2026-05-02T01:30:37.967Z",
       "https://openai.com/index/put-ai-to-work-for-your-product-team/": "2026-05-02T01:36:03.782Z",
@@ -1001,8 +1001,8 @@
       "https://openai.com/index/introducing-openai-safety-fellowship/": "2026-04-23T21:12:41.695Z",
       "https://openai.com/index/next-phase-of-enterprise-ai/": "2026-04-09T20:36:15.711Z",
       "https://openai.com/index/introducing-child-safety-blueprint/": "2026-05-02T01:36:37.517Z",
-      "https://openai.com/index/advanced-account-security/": "2026-05-02T10:11:58.511Z",
-      "https://openai.com/index/gpt-5-5-bio-bug-bounty/": "2026-05-02T02:05:00.320Z",
+      "https://openai.com/index/advanced-account-security/": "2026-05-02T11:40:22.699Z",
+      "https://openai.com/index/gpt-5-5-bio-bug-bounty/": "2026-05-02T17:35:46.369Z",
       "https://openai.com/index/introducing-workspace-agents-in-chatgpt/": "2026-05-02T01:56:50.831Z",
       "https://openai.com/index/introducing-openai-privacy-filter/": "2026-05-02T01:49:55.327Z",
       "https://openai.com/index/introducing-chatgpt-images-2-0/": "2026-05-02T01:33:11.856Z",
