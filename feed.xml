@@ -6,7 +6,14 @@
     <description>AI 开源生态每日简报 · Daily AI ecosystem digest</description>
     <language>zh-CN</language>
     <atom:link href="https://zx0828.github.io/big_model_radar/feed.xml" rel="self" type="application/rss+xml"/>
-    <lastBuildDate>Sun, 17 May 2026 00:57:27 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 01 Jun 2026 02:00:19 +0000</lastBuildDate>
+    <item>
+      <title>AI 工具生态周报 2026-06-01</title>
+      <link>https://zx0828.github.io/big_model_radar/#2026-06-01/ai-weekly</link>
+      <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-06-01/ai-weekly</guid>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <description>AI 工具生态周报 2026-06-01</description>
+    </item>
     <item>
       <title>AI CLI 工具社区动态日报 2026-05-17</title>
       <link>https://zx0828.github.io/big_model_radar/#2026-05-17/ai-cli</link>
@@ -209,13 +216,6 @@
       <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-05-02/ai-trending</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
       <description>AI 开源趋势日报 2026-05-02</description>
-    </item>
-    <item>
-      <title>Hacker News AI 社区动态日报 2026-05-02</title>
-      <link>https://zx0828.github.io/big_model_radar/#2026-05-02/ai-hn</link>
-      <guid isPermaLink="true">https://zx0828.github.io/big_model_radar/#2026-05-02/ai-hn</guid>
-      <pubDate>Sat, 02 May 2026 00:00:00 +0000</pubDate>
-      <description>Hacker News AI 社区动态日报 2026-05-02</description>
     </item>
   </channel>
 </rss>
