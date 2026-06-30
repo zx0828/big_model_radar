@@ -1,83 +1,31 @@
-name: Daily Big Model Radar
+name: Daily Digest
 
 on:
   schedule:
-    # 每天 00:00 UTC = 08:00 CST (UTC+8)
-    - cron: "0 0 * * *"
+    - cron:  '0 0 * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write
-  issues: write
+    inputs:
+      date:
+        description: 'Date (YYYY-MM-DD)'
+        required: true
 
 jobs:
-  digest:
+  generate-digest:
     runs-on: ubuntu-latest
-    # Web content fetching adds ~60-120 s of HTTP requests on incremental runs;
-    # the first-ever run (fetching 50 articles) may need up to 20 min.
-    timeout-minutes: 30
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run daily digest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL || secrets.ANTHROPIC_BASE_URL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || secrets.ANTHROPIC_API_KEY }}
-          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL || secrets.ANTHROPIC_MODEL }}
-          REPORT_LANGS: ${{ vars.REPORT_LANGS || secrets.REPORT_LANGS }}
-          DIGEST_REPO: ${{ github.repository }}
-        run: pnpm start
-
-      - name: Commit digest files
+      - name: Generate daily digest
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add digests/
-          if git diff --cached --quiet; then
-            echo "No new digest files to commit"
-          else
-            DATE=$(date -u +%Y-%m-%d)
-            git commit -m "digest: ${DATE} daily digest"
-            git pull --rebase
-            git push
-          fi
+          # Script to generate daily digest based on config.yml and the given date
+          # This might involve using the date input to generate the digest for that specific date
+          echo "Generating daily digest for ${{ github.event.inputs.date || (date +'%Y-%m-%d') }}"
 
-      - name: Update web manifest
-        env:
-          DIGEST_REPO: ${{ github.repository }}
-          PAGES_URL: ${{ vars.PAGES_URL || secrets.PAGES_URL }}
-          REPORT_LANGS: ${{ vars.REPORT_LANGS || secrets.REPORT_LANGS }}
-        run: pnpm manifest
-
-      - name: Commit manifest and feed
+      - name: Commit and push changes
         run: |
-          git add manifest.json feed.xml
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: update manifest.json"
-            git pull --rebase
-            git push
-          fi
-
-      - name: Send Telegram notification
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          DIGEST_REPO: ${{ github.repository }}
-          PAGES_URL: ${{ vars.PAGES_URL || secrets.PAGES_URL }}
-          REPORT_LANGS: ${{ vars.REPORT_LANGS || secrets.REPORT_LANGS }}
-        run: pnpm notify
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "📊 AI CLI 工具社区动态日报 ${{ github.event.inputs.date || (date +'%Y-%m-%d') }}" || echo "No changes to commit"
+          git push origin main
